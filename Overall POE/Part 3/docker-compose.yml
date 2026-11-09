@@ -1,0 +1,58 @@
+services:
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: azurite
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data --skipApiVersionCheck
+    # Only reachable from the host itself, because the Azurite account key is public
+    ports:
+      - "127.0.0.1:10000:10000"
+      - "127.0.0.1:10001:10001"
+      - "127.0.0.1:10002:10002"
+    volumes:
+      - azurite-data:/data
+    networks:
+      - coffeenchill-network
+    restart: unless-stopped
+
+  # No ports here: clients have to go through the gateway
+  functions:
+    image: bonolo05/coffeenchill-functions:${IMAGE_TAG:-v3.0}
+    container_name: coffeenchill-functions
+    depends_on:
+      - azurite
+    environment:
+      AzureWebJobsStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
+      AzureWebJobsSecretStorageType: files
+      FUNCTIONS_WORKER_RUNTIME: dotnet-isolated
+    volumes:
+      - ./docker/keys:/azure-functions-host/Secrets
+    networks:
+      - coffeenchill-network
+    restart: unless-stopped
+
+  gateway:
+    image: bonolo05/coffeenchill-gateway:${IMAGE_TAG:-v3.0}
+    container_name: coffeenchill-gateway
+    depends_on:
+      - azurite
+      - functions
+    ports:
+      - "5000:5000"
+    environment:
+      AzureWebJobsStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
+      Functions__BaseUrl: http://functions:80
+      Functions__Key: ${FUNCTION_KEY:?Set FUNCTION_KEY in the .env file}
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in the .env file}
+      AdminUser__Email: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in the .env file}
+      AdminUser__Password: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in the .env file}
+    networks:
+      - coffeenchill-network
+    restart: unless-stopped
+
+networks:
+  coffeenchill-network:
+    driver: bridge
+
+volumes:
+  azurite-data:

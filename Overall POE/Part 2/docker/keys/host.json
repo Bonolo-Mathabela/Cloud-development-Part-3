@@ -1,0 +1,4 @@
+{
+  "masterKey": { "name": "master", "value": "coffeenchill-local-master-key-2026", "encrypted": false },
+  "functionKeys": [ { "name": "default", "value": "CygywzCydtO1C0Y1SIK4Wf1aXAWErRJugFTYKhGC", "encrypted": false } ]
+}

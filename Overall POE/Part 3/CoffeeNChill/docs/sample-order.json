@@ -1,0 +1,7 @@
+{
+  "OrderId": "ORD-2026-8801",
+  "CustomerName": "Jane Smith",
+  "SelectedItemSKUs": ["COF-001", "PAS-104"],
+  "TotalPrice": 65.00,
+  "OrderTimestamp": "2026-10-12T10:15:00Z"
+}

@@ -1,0 +1,9 @@
+
+workspace:
+  id: ""
+
+localResources:
+  collections:
+    - ../docs/CoffeNChill.postman_collection.json
+  environments:
+    - ../docs/CoffeNChill.local.postman_environment.json

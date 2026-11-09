@@ -1,0 +1,8 @@
+# Secrets for docker compose
+.env
+
+# Build output
+bin/
+obj/
+.vs/
+TestResults/

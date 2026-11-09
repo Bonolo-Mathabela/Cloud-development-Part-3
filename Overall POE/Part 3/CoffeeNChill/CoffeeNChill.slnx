@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CoffeeNChill.csproj" />
+  <Project Path="../CoffeeNChill.Gateway/CoffeeNChill.Gateway.csproj" />
+  <Project Path="../CoffeeNChill.Tests/CoffeeNChill.Tests.csproj" />
+</Solution>

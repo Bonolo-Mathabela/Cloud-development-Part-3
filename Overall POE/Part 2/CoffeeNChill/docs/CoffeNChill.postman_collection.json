@@ -1,0 +1,461 @@
+{
+  "info": {
+    "_postman_id": "cc85ff4f-5d6e-44c1-a7e3-e4a9a68a81ee",
+    "name": "CoffeNChill",
+    "description": "Every request sends x-functions-key: {{functionKey}} (collection-level auth).\nImport docs/CoffeNChill.local.postman_environment.json and select the 'CoffeNChill Local' environment.\nSwitch baseUrl to http://localhost:7053 to hit the app running in Visual Studio instead of Docker.\n\nPart 2: the Orders folder puts an order on order-processing-queue and then checks its status in the Orders table (Received -> Preparing -> Ready -> Collected). Run 'Place Order' first, it saves the orderId for the status requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58160630"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "x-functions-key", "type": "string" },
+      { "key": "value", "value": "{{functionKey}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:7071", "type": "string" },
+    { "key": "functionKey", "value": "", "type": "string" },
+    { "key": "orderId", "value": "ORD-2026-8801", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Menu",
+      "item": [
+        {
+          "name": "Create Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"partitionKey\": \"coffee\",\r\n    \"rowKey\": \"1\",\r\n    \"name\": \"Cappuccino\",\r\n    \"description\": \"Espresso with steamed milk\",\r\n    \"price\": 35.00,\r\n    \"isAvailable\": true\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/menu",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "menu" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Menu Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is a list\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "menu" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Menu Items By Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/category/coffee",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "menu", "category", "coffee" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n    \"PartitionKey\": \"coffee\",\r\n    \"RowKey\": \"1\",\r\n    \"Name\": \"Cappuccino\",\r\n    \"Description\": \"Espresso with steamed milk\",\r\n    \"Price\": 35.96,\r\n    \"IsAvailable\": true\r\n  }",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/coffee/1",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "menu", "coffee", "1" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/coffee/1",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "menu", "coffee", "1" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Staff Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "file",
+              "file": { "src": "" }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/upload?fileName=MenuItems.csv",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "documents", "upload" ],
+              "query": [ { "key": "fileName", "value": "MenuItems.csv" } ]
+            },
+            "description": "Body -> binary -> choose any file on your PC (for example a CSV of the menu)."
+          },
+          "response": []
+        },
+        {
+          "name": "List Staff Documents",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is a list\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "documents" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download Staff Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/download/MenuItems.csv",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "documents", "download", "MenuItems.csv" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders (Part 2)",
+      "item": [
+        {
+          "name": "Place Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 202 Accepted\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "var body = pm.response.json();",
+                  "",
+                  "pm.test(\"Order was queued\", function () {",
+                  "    pm.expect(body.Message).to.eql(\"Order received and queued.\");",
+                  "    pm.expect(body.Order.OrderId).to.not.be.empty;",
+                  "    pm.expect(body.Order.OrderTimestamp).to.not.be.empty;",
+                  "});",
+                  "",
+                  "// Save the id so the status requests can use it",
+                  "pm.collectionVariables.set(\"orderId\", body.Order.OrderId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"OrderId\": \"ORD-2026-8801\",\r\n    \"CustomerName\": \"Jane Smith\",\r\n    \"SelectedItemSKUs\": [\"COF-001\", \"PAS-104\"],\r\n    \"TotalPrice\": 65.00,\r\n    \"OrderTimestamp\": \"2026-10-12T10:15:00Z\"\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/queue",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "orders", "queue" ]
+            },
+            "description": "Puts the order on order-processing-queue as a JSON message. The queue function picks it up and writes it to the Orders table."
+          },
+          "response": []
+        },
+        {
+          "name": "Place Order - No OrderId (id and timestamp generated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 202 Accepted\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "",
+                  "var body = pm.response.json();",
+                  "",
+                  "pm.test(\"OrderId was generated\", function () {",
+                  "    pm.expect(body.Order.OrderId).to.match(/^ORD-\\d{4}-\\d{4}$/);",
+                  "});",
+                  "",
+                  "pm.test(\"OrderTimestamp was generated\", function () {",
+                  "    pm.expect(body.Order.OrderTimestamp).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"CustomerName\": \"Thabo Nkosi\",\r\n    \"SelectedItemSKUs\": [\"COF-002\"],\r\n    \"TotalPrice\": 32.50\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/queue",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "orders", "queue" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Place Order - Invalid (missing fields)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Reason is explained\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"CustomerName is required\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"OrderId\": \"ORD-2026-0000\",\r\n    \"SelectedItemSKUs\": [],\r\n    \"TotalPrice\": 0\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/queue",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "orders", "queue" ]
+            },
+            "description": "CustomerName is missing, the SKU list is empty and the price is 0. The producer must refuse it and not put anything on the queue."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var order = pm.response.json();",
+                  "",
+                  "pm.test(\"Order is in the Orders table\", function () {",
+                  "    pm.expect(order.OrderId).to.eql(pm.collectionVariables.get(\"orderId\"));",
+                  "    pm.expect(order.OrderDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+                  "});",
+                  "",
+                  "pm.test(\"Status is one of the lifecycle steps\", function () {",
+                  "    pm.expect([\"Received\", \"Preparing\", \"Ready\", \"Collected\"]).to.include(order.Status);",
+                  "});",
+                  "",
+                  "console.log(\"Order \" + order.OrderId + \" is now: \" + order.Status);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "orders", "{{orderId}}" ]
+            },
+            "description": "Send this a few times (about every 30 seconds) to watch the status go Received -> Preparing -> Ready -> Collected. Gives 404 if the queue function has not written the order yet."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is a list\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "orders" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
